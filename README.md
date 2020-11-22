@@ -1,0 +1,1 @@
+This directory contains blockchain applications, starting from hashing, cryptography, building data structures in order to create a blockchain from scratch.
