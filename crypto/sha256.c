@@ -11,12 +11,11 @@
 uint8_t *sha256(int8_t const *s, size_t len,
 		uint8_t digest[SHA256_DIGEST_LENGTH])
 {
+	if (digest == 0)
+		return (0);
 	return (SHA256((const unsigned char *)s, len, digest));
 /*	SHA256_CTX c;
 	size_t i = 0;
-
-	if (digest == 0)
-		return (0);
 	SHA256_Init(&digest);
 	SHA256_Update(&digest, s, len);
 	SHA256_Final(digest, &digest);
