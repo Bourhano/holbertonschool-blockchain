@@ -6,10 +6,10 @@
 
 # include <openssl/sha.h>
 # include <openssl/ec.h>
+# include <openssl/objects.h>
 # include <stdint.h>
 
 # define EC_CURVE   NID_secp256k1
-
 /* EC_KEY public key octet string length (using 256-bit curve) */
 # define EC_PUB_LEN 65
 /* Maximum signature octet string length (using 256-bit curve) */
