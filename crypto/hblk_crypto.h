@@ -7,6 +7,7 @@
 # include <openssl/sha.h>
 # include <openssl/ec.h>
 # include <openssl/objects.h>
+# include <openssl/ecdsa.h>
 # include <stdint.h>
 
 # define EC_CURVE   NID_secp256k1
