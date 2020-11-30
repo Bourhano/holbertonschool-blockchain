@@ -30,12 +30,13 @@ uint8_t *ec_sign(EC_KEY const *key, uint8_t const *msg, size_t msglen,
 {
 	uint8_t hash[SHA256_DIGEST_LENGTH];
 
-	if (key == 0 || msg == 0)
+	if (key == 0 || msg == 0 || sig == 0)
 		return (NULL);
-	sha256((int8_t *)msg, msglen, hash);
+	if (sha256((int8_t *)msg, msglen, hash) == 0)
+		return (0);
 	if (ECDSA_sign(0, (const unsigned char *)hash, SHA256_DIGEST_LENGTH,
-		   (unsigned char *)sig, (unsigned int *)&sig->len,
+		       (unsigned char *)sig->sig, (unsigned int *)&(sig->len),
 		       (EC_KEY *)key) == 0)
 		return (0);
-	return ((uint8_t *)sig);
+	return (sig->sig);
 }
