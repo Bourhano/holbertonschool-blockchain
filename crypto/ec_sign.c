@@ -33,8 +33,9 @@ uint8_t *ec_sign(EC_KEY const *key, uint8_t const *msg, size_t msglen,
 	if (key == 0 || msg == 0)
 		return (NULL);
 	sha256((int8_t *)msg, msglen, hash);
-	ECDSA_sign(0, (const unsigned char *)hash, SHA256_DIGEST_LENGTH,
+	if (ECDSA_sign(0, (const unsigned char *)hash, SHA256_DIGEST_LENGTH,
 		   (unsigned char *)sig, (unsigned int *)&sig->len,
-		   (EC_KEY *)key);
+		       (EC_KEY *)key) == 0)
+		return (0);
 	return ((uint8_t *)sig);
 }
