@@ -12,14 +12,11 @@
 uint8_t *ec_sign(EC_KEY const *key, uint8_t const *msg, size_t msglen,
 		 sig_t *sig)
 {
-	unsigned int len = 0;
+	const ECDSA_SIG *signature;
 
-	if (key == 0 || msg == 0)
-		return (NULL);
+	signature = ECDSA_do_sign(msg, msglen, (EC_KEY *)key);
 	sig = malloc(sizeof(sig_t));
-	ECDSA_sign(0, (const unsigned char *)msg, (int)msglen,
-		   (unsigned char *)sig, &len, (EC_KEY *)key);
-	sig->len = (uint8_t)strlen((char *)sig->sig);
-	printf("%d", (int)sig->len);
+	i2d_ECDSA_SIG(signature, (unsigned char **)&sig);
+	sig->len = strlen((char *)sig->sig);
 	return ((uint8_t *)sig->sig);
 }
