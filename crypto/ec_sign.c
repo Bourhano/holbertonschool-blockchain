@@ -9,11 +9,11 @@
  * Return: pointer to the hash
  **/
 uint8_t *sha256(int8_t const *s, size_t len,
-                uint8_t digest[SHA256_DIGEST_LENGTH])
+		uint8_t digest[SHA256_DIGEST_LENGTH])
 {
-        if (digest == 0)
-                return (0);
-        return (SHA256((const unsigned char *)s, len, digest));
+	if (digest == 0)
+		return (0);
+	return (SHA256((const unsigned char *)s, len, digest));
 }
 
 /**
@@ -28,14 +28,13 @@ uint8_t *sha256(int8_t const *s, size_t len,
 uint8_t *ec_sign(EC_KEY const *key, uint8_t const *msg, size_t msglen,
 		 sig_t *sig)
 {
-	unsigned int len = 0;
 	uint8_t hash[SHA256_DIGEST_LENGTH];
 
 	if (key == 0 || msg == 0)
 		return (NULL);
 	sha256((int8_t *)msg, msglen, hash);
 	ECDSA_sign(0, (const unsigned char *)hash, SHA256_DIGEST_LENGTH,
-		   (unsigned char *)sig, &len, (EC_KEY *)key);
-	sig->len = ECDSA_size(key);
+		   (unsigned char *)sig, (unsigned int *)&sig->len,
+		   (EC_KEY *)key);
 	return ((uint8_t *)sig);
 }
