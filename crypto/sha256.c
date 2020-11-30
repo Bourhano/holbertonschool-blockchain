@@ -14,16 +14,17 @@ uint8_t *sha256(int8_t const *s, size_t len,
 	if (digest == 0)
 		return (0);
 	return (SHA256((const unsigned char *)s, len, digest));
-/*	SHA256_CTX c;
-	size_t i = 0;
-	SHA256_Init(&digest);
-	SHA256_Update(&digest, s, len);
-	SHA256_Final(digest, &digest);
-	for (i = 0; i < len; i++)
-	{
-		sprintf(digest + (i * 2), s[i]);
-	}
-	digest[len] = 0;
-	return (digest);
-*/
+/**
+ *	SHA256_CTX c;
+ *	size_t i = 0;
+ *	SHA256_Init(&digest);
+ *	SHA256_Update(&digest, s, len);
+ *	SHA256_Final(digest, &digest);
+ *	for (i = 0; i < len; i++)
+ *	{
+ *		sprintf(digest + (i * 2), s[i]);
+ *	}
+ *	digest[len] = 0;
+ *	return (digest);
+ **/
 }
