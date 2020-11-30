@@ -1,6 +1,22 @@
 #include "hblk_crypto.h"
 
 /**
+ * sha256 - Returns the pointer to the hash of the input sequence
+ * @s: the sequence of bytes to be hashed
+ * @len: the number of bytes to hash in @s
+ * @digest: the pre-defined area to store the hash
+ *
+ * Return: pointer to the hash
+ **/
+uint8_t *sha256(int8_t const *s, size_t len,
+                uint8_t digest[SHA256_DIGEST_LENGTH])
+{
+        if (digest == 0)
+                return (0);
+        return (SHA256((const unsigned char *)s, len, digest));
+}
+
+/**
  * ec_sign - Signs a given set of bytes, using a given EC_KEY private key
  * @key: EC key pair already generated
  * @msg: message to be signed
@@ -12,11 +28,14 @@
 uint8_t *ec_sign(EC_KEY const *key, uint8_t const *msg, size_t msglen,
 		 sig_t *sig)
 {
-	const ECDSA_SIG *signature;
+	unsigned int len = 0;
+	uint8_t hash[SHA256_DIGEST_LENGTH];
 
-	signature = ECDSA_do_sign(msg, msglen, (EC_KEY *)key);
-	sig = malloc(sizeof(sig_t));
-	i2d_ECDSA_SIG(signature, (unsigned char **)&sig);
-	sig->len = strlen((char *)sig->sig);
-	return ((uint8_t *)sig->sig);
+	if (key == 0 || msg == 0)
+		return (NULL);
+	sha256((int8_t *)msg, msglen, hash);
+	ECDSA_sign(0, (const unsigned char *)hash, SHA256_DIGEST_LENGTH,
+		   (unsigned char *)sig, &len, (EC_KEY *)key);
+	sig->len = ECDSA_size(key);
+	return ((uint8_t *)sig);
 }
