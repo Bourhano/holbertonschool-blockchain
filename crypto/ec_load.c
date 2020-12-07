@@ -16,6 +16,8 @@ EC_KEY *ec_load(char const *folder)
 		return (0);
 	sprintf(fileName, "%s/%s", folder, "/key.pem");
 	fp = fopen(fileName, "r");
+	if (!fp)
+		return (0);
 	if (PEM_read_ECPrivateKey(fp, &key, NULL, NULL) == 0)
 	{
 		fclose(fp);
@@ -24,6 +26,8 @@ EC_KEY *ec_load(char const *folder)
 	fclose(fp);
 	sprintf(fileName, "%s/%s", folder, "/key_pub.pem");
 	fp = fopen(fileName, "r");
+	if (!fp)
+		return (0);
 	if (PEM_read_EC_PUBKEY(fp, &key, 0, 0) == 0)
 	{
 		fclose(fp);
