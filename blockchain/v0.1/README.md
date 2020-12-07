@@ -1,0 +1,1 @@
+This is the first elementary implementation of the BlockChain on C, with the portable data types and structures.
