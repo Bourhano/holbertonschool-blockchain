@@ -9,13 +9,28 @@
  **/
 int ec_save(EC_KEY *key, char const *folder)
 {
-	FILE *privK = 0, *pubK = 0;
+	FILE *fp;
+	char fileName[1024];
 
-	privK = fopen("./", strcat(folder, "/key.pem")),"w+");
-	pubK = fopen(strcat("./", strcat(folder, "/key_pub.pem")),"w+");
-	PEM_write_PrivateKey(privK, key, NULL,
-			       NULL, EC_PUB_LEN, NULL, NULL);
-	fclose(privK);
-	fclose(pubK);
+	if (!key || !folder)
+		return (0);
+	sprintf(fileName, "%s/%s", folder, "/key.pem");
+	mkdir(folder, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+	fp = fopen(fileName, "w");
+	if (PEM_write_ECPrivateKey(fp, key, NULL,
+				   NULL, 0, NULL, NULL) == 0)
+	{
+		fclose(fp);
+		return (0);
+	}
+	fclose(fp);
+	sprintf(fileName, "%s/%s", folder, "/key_pub.pem");
+	fp = fopen(fileName, "w");
+	if (PEM_write_EC_PUBKEY(fp, key) == 0)
+	{
+		fclose(fp);
+		return (0);
+	}
+	fclose(fp);
 	return (1);
 }
