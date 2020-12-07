@@ -3,12 +3,14 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include<sys/stat.h>
 
+# include <stdint.h>
 # include <openssl/sha.h>
 # include <openssl/ec.h>
 # include <openssl/objects.h>
 # include <openssl/ecdsa.h>
-# include <stdint.h>
+# include <openssl/pem.h>
 
 # define EC_CURVE   NID_secp256k1
 /* EC_KEY public key octet string length (using 256-bit curve) */
