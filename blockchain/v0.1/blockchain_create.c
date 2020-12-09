@@ -7,31 +7,26 @@
  **/
 blockchain_t *blockchain_create(void)
 {
-	blockchain_t *blkchn;
-	block_t genesis = {
-		{ /* info */
-			0 /* index */,
-			0, /* difficulty */
-			1537578000, /* timestamp */
-			0, /* nonce */
-			"\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0"
-			"\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0"
-			/* prev_hash */
-		},
-		{ /* data */
-			"", /* buffer */
-			(uint32_t)16 /* len */
-		},
-		{"\xc5\x2c\x26\xc8\xb5\x46\x16\x39\x63\x5d\x8e\xdf\x2a"
-		 "\x97\xd4"
-		 "\x8d\x0c\x8e\x00\x09\xc8\x17\xf2\xb1\xd3\xd7\xff\x2f\x04\x51"
-		 "\x58\x03"} /*hash*/
-	};
-	llist_t *head ;
+	blockchain_t *chain = calloc(1, sizeof(*chain));
+	block_t *block = calloc(1, sizeof(*block));
+	llist_t *list = llist_create(MT_SUPPORT_TRUE);
 
-	blkchn = malloc(sizeof(blockchain_t));
-	head = llist_create(MT_SUPPORT_TRUE);
-	llist_add_node(head, &genesis, ADD_NODE_FRONT);
-	blkchn->chain = head;
-	return (blkchn);
+	if (!chain || !block || !list)
+	{
+		free(chain), free(block), llist_destroy(list, 1, NULL);
+		perror("memory allocation failed");
+		return (NULL);
+	}
+	block->info.timestamp = GENESIS_TIMESTAMP;
+	memcpy(&(block->data.buffer), GENESIS_DATA, GENESIS_DATA_LEN);
+	block->data.len = GENESIS_DATA_LEN;
+	memcpy(&(block->hash), GENESIS_HASH, SHA256_DIGEST_LENGTH);
+	if (llist_add_node(list, block, ADD_NODE_FRONT))
+	{
+		perror("failed to add node to the llist");
+		free(chain), free(block), llist_destroy(list, 1, NULL);
+		return (NULL);
+	}
+	chain->chain = list;
+	return (chain);
 }
