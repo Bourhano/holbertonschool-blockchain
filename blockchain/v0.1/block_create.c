@@ -2,6 +2,9 @@
 
 /**
  * block_create - Creates a Block structure, and initializes it
+ * @prev: previous block in the blockchain
+ * @data: data to store in current block
+ * @data_len: length of @data
  *
  * Return: pointer to the block structure
  **/
