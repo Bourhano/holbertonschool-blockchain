@@ -24,7 +24,8 @@
 #define GENESIS_TIMESTAMP   1537578000
 #define HBLK_MAGIC "HBLK"
 #define HBLK_VERSION "0.2"
-
+#define BLOCK_GENERATION_INTERVAL 1
+#define DIFFICULTY_ADJUSTMENT_INTERVAL 5
 
 /**
  * struct block_data_s - Block data
