@@ -132,11 +132,10 @@ typedef struct transaction_s
  */
 typedef struct Visitor
 {
-        llist_t *sender_unspent;
-        uint8_t *sender_pub;
-        uint64_t total_amount;
-        uint64_t amount;
-
+	llist_t *sender_unspent;
+	uint8_t *sender_pub;
+	uint64_t total_amount;
+	uint64_t amount;
 } visitor_t;
 
 /**
@@ -216,24 +215,34 @@ uint8_t *block_hash(block_t const *block,
 		    uint8_t hash_buf[SHA256_DIGEST_LENGTH]);
 int blockchain_serialize(blockchain_t const *blockchain, char const *path);
 blockchain_t *blockchain_deserialize(char const *path);
-int block_is_valid(block_t const *block, block_t const *prev_block, llist_t *all_unspent);
+int block_is_valid(block_t const *block, block_t const *prev_block,
+		   llist_t *all_unspent);
 llist_t *deserialize_blocks(int fd, uint32_t size, uint8_t endianness);
 
-int hash_matches_difficulty(uint8_t const hash[SHA256_DIGEST_LENGTH], uint32_t difficulty);
+int hash_matches_difficulty(uint8_t const hash[SHA256_DIGEST_LENGTH],
+			    uint32_t difficulty);
 void block_mine(block_t *block);
 uint32_t blockchain_difficulty(blockchain_t const *blockchain);
 
 tx_out_t *tx_out_create(uint32_t amount, uint8_t const pub[EC_PUB_LEN]);
-unspent_tx_out_t *unspent_tx_out_create(uint8_t block_hash[SHA256_DIGEST_LENGTH], uint8_t tx_id[SHA256_DIGEST_LENGTH], tx_out_t const *out);
+unspent_tx_out_t *unspent_tx_out_create(
+	uint8_t block_hash[SHA256_DIGEST_LENGTH],
+	uint8_t tx_id[SHA256_DIGEST_LENGTH], tx_out_t const *out);
 tx_in_t *tx_in_create(unspent_tx_out_t const *unspent);
-uint8_t *transaction_hash(transaction_t const *transaction, uint8_t hash_buf[SHA256_DIGEST_LENGTH]);
-sig_t *tx_in_sign(tx_in_t *in, uint8_t const tx_id[SHA256_DIGEST_LENGTH], EC_KEY const *sender, llist_t *all_unspent);
-transaction_t *transaction_create(EC_KEY const *sender, EC_KEY const *receiver, uint32_t amount, llist_t *all_unspent);
-int transaction_is_valid(transaction_t const *transaction, llist_t *all_unspent);
+uint8_t *transaction_hash(transaction_t const *transaction,
+			  uint8_t hash_buf[SHA256_DIGEST_LENGTH]);
+sig_t *tx_in_sign(tx_in_t *in, uint8_t const tx_id[SHA256_DIGEST_LENGTH],
+		  EC_KEY const *sender, llist_t *all_unspent);
+transaction_t *transaction_create(EC_KEY const *sender, EC_KEY const *receiver,
+				  uint32_t amount, llist_t *all_unspent);
+int transaction_is_valid(transaction_t const *transaction,
+			 llist_t *all_unspent);
 transaction_t *coinbase_create(EC_KEY const *receiver, uint32_t block_index);
 int coinbase_is_valid(transaction_t const *coinbase, uint32_t block_index);
 void transaction_destroy(transaction_t *transaction);
-llist_t *update_unspent(llist_t *transactions, uint8_t block_hash[SHA256_DIGEST_LENGTH], llist_t *all_unspent);
+llist_t *update_unspent(llist_t *transactions,
+			uint8_t block_hash[SHA256_DIGEST_LENGTH],
+			llist_t *all_unspent);
 
 #define GENESIS_BLOCK {				\
 		{ /* info */			\
@@ -248,8 +257,7 @@ llist_t *update_unspent(llist_t *transactions, uint8_t block_hash[SHA256_DIGEST_
 				16 /* len */				\
 				},					\
 			NULL, /* transactions */			\
-				"\xc5\x2c\x26\xc8\xb5\x46\x16\x39\x63\x5d\x8e\xdf\x2a\x97\xd4\x8d" \
-				"\x0c\x8e\x00\x09\xc8\x17\xf2\xb1\xd3\xd7\xff\x2f\x04\x51\x58\x03" \
+				"\xc5\x2c\x26\xc8\xb5\x46\x16\x39\x63\x5d\x8e\xdf\x2a\x97\xd4\x8d\x0c\x8e\x00\x09\xc8\x17\xf2\xb1\xd3\xd7\xff\x2f\x04\x51\x58\x03" \
 				}
 
 #include "transaction/transaction.h"

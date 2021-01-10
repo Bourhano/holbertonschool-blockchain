@@ -29,6 +29,8 @@ int validate_tx(llist_node_t node, unsigned int idx, void *arg)
  * block_is_valid - checks if this and previous block are valid
  * @block: pointer to this block in the chain
  * @prev_block: pointer to previous block in the chain or NULL
+ * @all_unspent: pointer to all unspent outputs UTXO
+ *
  * Return: 0 if valid else 1 if invalid
  */
 int block_is_valid(block_t const *block, block_t const *prev_block,
