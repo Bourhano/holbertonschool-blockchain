@@ -13,6 +13,8 @@
 #include<time.h>
 #include<openssl/sha.h>
 
+#include "transaction/transaction.h"
+
 
 /**
  * Constants definition
@@ -27,7 +29,6 @@
 #define BLOCK_GENERATION_INTERVAL 1
 #define DIFFICULTY_ADJUSTMENT_INTERVAL 5
 #define COINBASE_AMOUNT    50
-
 
 /**
  * struct block_data_s - Block data
@@ -117,10 +118,45 @@ typedef struct tx_in_s
  */
 typedef struct transaction_s
 {
-	uint8_t     id[SHA256_DIGEST_LENGTH];
-	llist_t     *inputs;
-	llist_t     *outputs;
+	uint8_t id[SHA256_DIGEST_LENGTH];
+	llist_t *inputs;
+	llist_t *outputs;
 } transaction_t;
+
+/**
+ * struct Visitor - visitor struct for collect sender's unspent
+ * @sender_unspent: list to collect sender's unspent tx
+ * @sender_pub: sender's public key
+ * @total_amount: of unspent tx
+ * @amount: amount to send
+ */
+typedef struct Visitor
+{
+        llist_t *sender_unspent;
+        uint8_t *sender_pub;
+        uint64_t total_amount;
+        uint64_t amount;
+
+} visitor_t;
+
+/**
+ * struct Validation_Visitor - visitor struct for tx validation
+ * @in_amount: total txi amount
+ * @out_amount: total txo amount
+ * @valid: 1 if tx valid else 0
+ * @all_unspent: all unspent txs
+ * @tx: the tx to validate
+ * @block_index: the block index cointaining tx
+ */
+typedef struct Validation_Visitor
+{
+	long in_amount;
+	long out_amount;
+	int valid;
+	llist_t *all_unspent;
+	transaction_t const *tx;
+	uint32_t block_index;
+} validation_vistor_t;
 
 
 /**
@@ -180,11 +216,10 @@ uint8_t *block_hash(block_t const *block,
 		    uint8_t hash_buf[SHA256_DIGEST_LENGTH]);
 int blockchain_serialize(blockchain_t const *blockchain, char const *path);
 blockchain_t *blockchain_deserialize(char const *path);
-int block_is_valid(block_t const *block, block_t const *prev_block);
+int block_is_valid(block_t const *block, block_t const *prev_block, llist_t *all_unspent);
 llist_t *deserialize_blocks(int fd, uint32_t size, uint8_t endianness);
 
 int hash_matches_difficulty(uint8_t const hash[SHA256_DIGEST_LENGTH], uint32_t difficulty);
-int block_is_valid(block_t const *block, block_t const *prev_block);
 void block_mine(block_t *block);
 uint32_t blockchain_difficulty(blockchain_t const *blockchain);
 
@@ -200,11 +235,10 @@ int coinbase_is_valid(transaction_t const *coinbase, uint32_t block_index);
 void transaction_destroy(transaction_t *transaction);
 llist_t *update_unspent(llist_t *transactions, uint8_t block_hash[SHA256_DIGEST_LENGTH], llist_t *all_unspent);
 
-
-#define GENESIS_BLOCK { \
-		{ /* info */	    \
-			0 /* index */,				\
-				0, /* difficulty */		\
+#define GENESIS_BLOCK {				\
+		{ /* info */			\
+			0 /* index */,		\
+				0, /* difficulty */	\
 				1537578000, /* timestamp */	\
 				0, /* nonce */			\
 				{0} /* prev_hash */		\
@@ -213,7 +247,10 @@ llist_t *update_unspent(llist_t *transactions, uint8_t block_hash[SHA256_DIGEST_
 			"Holberton School", /* buffer */	\
 				16 /* len */				\
 				},					\
-		"\xc5\x2c\x26\xc8\xb5\x46\x16\x39\x63\x5d\x8e\xdf\x2a\x97\xd4\x8d" \
-		"\x0c\x8e\x00\x09\xc8\x17\xf2\xb1\xd3\xd7\xff\x2f\x04\x51\x58\x03" \
-		}
+			NULL, /* transactions */			\
+				"\xc5\x2c\x26\xc8\xb5\x46\x16\x39\x63\x5d\x8e\xdf\x2a\x97\xd4\x8d" \
+				"\x0c\x8e\x00\x09\xc8\x17\xf2\xb1\xd3\xd7\xff\x2f\x04\x51\x58\x03" \
+				}
+
+#include "transaction/transaction.h"
 #endif
